@@ -123,10 +123,52 @@ Within each dependency would reside their own dependencies within their own *pac
 ### Possible in-browser structure.
 
 Given a package aware module bundling tool that brings together and processes code modules into a format suitable to serve to a web browser we may end up with JS code
-bundles similar in structure to the one below.
+bundles similar in structure to the one below. Two functions are prerequisite for the bundle to work in a browser.
+
+1. The module registration function *define-module* which is used to register the module.
+2. The module dependency accessor function *import* which is used to access other required modules.
+
+#### define-module's definition.
+
+The *define-module* function is probably the least transparent concept encountered so far. It has several parameters. The first few enumerate the dependencies 
+that pulled a module into the bundle, the dependency graph. The reason for this data is explained below but firstly the parameter list. 
+
+1. An array of package IDs. These are the parent package all the way to the package the module is part of.
+2. An array of directories that must be traversed to reach the module. Empty if module is inside the *lib* directory.
+3. The module ID string.
+4. A boolean indicating whether the module is the package's main module.
+5. The module body wrapped within a function.
+
+The reason for flattening modules out instead of nesting them is to more closely mirror ES6 modules which do not support nested modules. 
+i.e. you cannot place a module definition within another module definition.
+
+That means to make use of ES6 modules all module definitions must be placed at the top level of a script.
+
+#### import's definition.
+
+The *import* function follows the CommonJS *require* function closely. The points below are directly from the *require* 
+[definition](http://wiki.commonjs.org/wiki/Modules/1.1).
+
+1. The *import* function accepts a module identifier.
+2. *import* returns the exported API of the foreign module.
+3.  If there is a dependency cycle, the foreign module may not have finished executing at the time it is required by one of its transitive dependencies; in this case, 
+the object returned by "require" must contain at least the exports that the foreign module has prepared before the call to require that led to the current module's execution.
+4. If the requested module cannot be returned, *import* must throw an error.
+
+#### Bundle tool example code.
+
+Given all these prerequisites this code example should successfully load up and execute the *test-package* module code.
 
 ```javascript
-	define-module("test-package/DIV/another-test-package/DIV/more-package/dir/more-required-by-main-module", function( require, exports, module ){
-		console.log("Hello from dir/more-required-by-main-module module. I have no dependencies.");
-	});
+define-module( [ "test-package", "another-test-package", "more-package" ], [ "dir" ], "more-required-by-main-module", false, function( import, exports, module ){
+	console.log( "Hello from dir/more-required-by-main-module module. I have no dependencies." );
+	
+	exports.hello = function(){ return "hello"; };
+});
+
+define-module( ["test-package", "another-test-package", "more-package"], [], "more-main-module", true, function( import, exports, module ){
+	var hello = import( "./dir/more-required-by-main-module" ).hello;
+	
+	console.log( "Hello from more-main-module.js. I have dependencies. They say ", hello() );
+});
 ```
