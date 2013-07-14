@@ -26,10 +26,9 @@ There is a function e.g. *import* that when given a module or package identifier
 
 	another-test-package/
 		lib/
-			*another-main-module.js*
-			*another-required-by-main-module.js*			
-				* Only loadable by another-main-module.js, loaded with " import("./another-required-by-main-module"); " in the another-main-module.js file.
-		*package.json*
+			another-main-module.js
+			another-required-by-main-module.js
+		package.json
 			{
 			   "name" : "another-test-package",
 			   "version" : "0.2.0",
@@ -41,10 +40,9 @@ There is a function e.g. *import* that when given a module or package identifier
 
 	more-package/
 		lib/
-			*more-main-module.js*
-			dir/*more-required-by-main-module.js*			
-				* Only loadable by more-main-module.js, loaded with " import("./dir/more-required-by-main-module"); " in the more-main-module.js file.
-		*package.json*
+			more-main-module.js
+			dir/more-required-by-main-module.js
+		package.json
 			{
 			   "name" : "more-package",
 			   "version" : "0.3.0",
@@ -56,7 +54,16 @@ There is a function e.g. *import* that when given a module or package identifier
 * The file *required-by-main-module.js* is only loadable by *main-module.js*, loaded with *import("./required-by-main-module");* in the *main-module.js* file.
 * Any module that is part of *test-package* can import its dependencies by using *import*.
  + i.e. *import("another-test-package")*. Will return the module defined within *another-test-package*'s *package.json* "main" attribute.
-* In this case it will return the "another-main-module.js" code module's exports.
-* The "import" function will **not** return any other modules as they are not defined as explicit dependencies of "test-package", even if they are available.
-* i.e. " import("more-package") ". Will throw an error ( maybe ReferenceError? Or a new Error type? )
-			
+ + In this case it will return the *another-main-module.js* code module's exports.
+* The *import* function will **not** return any other modules as they are not defined as explicit dependencies of *test-package*, even if they are available.
+ + i.e. *import("more-package")*. Will throw an error ( maybe ReferenceError? Or a new Error type? )
+
+#### Within the *another-test-package* package.
+
+* The file *another-required-by-main-module.js* is only loadable by *another-main-module.js*, loaded with *import("./another-required-by-main-module");* 
+in the *another-main-module.js* file.
+
+#### Within the *more-package* package.
+
+* The file *more-required-by-main-module.js* is only loadable by *more-main-module.js*, loaded with *import("./dir/more-required-by-main-module");* 
+in the *more-main-module.js* file.
