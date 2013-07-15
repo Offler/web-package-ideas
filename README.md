@@ -144,8 +144,53 @@ exports.hello = function(){ return "hello"; };
 var hello = import( "./dir/more-required-by-main-module" ).hello;
 
 console.log( "Hello from more-main-module.js. I have a dependency. It says ", hello() );
-```
 
+module.exports = function More(){ console.log( "Constructed a More class." ); };
+```
+##### Inside another-test-package package
+
+*another-required-by-main-module.js*
+
+```javascript
+console.log( "Hello from another-required-by-main-module module. I have no dependencies." );
+
+exports.hello = function(){ return "another-required-by-main-module.js"; };
+```
+*another-main-module.js*
+
+```javascript
+var More = import( "more-package" );
+var hello = import( "./dir/more-required-by-main-module" ).hello;
+
+console.info( "Constructing a More inside another-test-package" );
+
+var moreInstance = new More();
+
+console.log( "Hello from another-main-module. I have a dependency. It says ", hello() );
+
+module.exports = function (){ console.log( "Inside another-test-package." ); }
+```
+##### Inside test-package package
+
+*required-by-main-module.js*
+
+```javascript
+console.log( "Hello from required-by-main-module module. I have no dependencies." );
+
+exports.hello = function(){ return "required-by-main-module.js"; };
+```
+*main-module.js*
+
+```javascript
+var test = import( "another-test-package" );
+var hello = import( "./dir/more-required-by-main-module" ).hello;
+
+console.info( "Calling test inside test-package" );
+
+test();
+
+console.log( "Hello from main-module. I have a dependency. It says ", hello() );
+```
 
 ### Possible in-browser structure.
 
