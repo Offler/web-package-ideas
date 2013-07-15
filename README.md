@@ -234,14 +234,64 @@ The wrapping around the code modules is generated and added by the bundling tool
 
 ```javascript
 define-module( [ "test-package", "another-test-package", "more-package" ], [ "dir" ], "more-required-by-main-module", false, function( import, exports, module ){
-	console.log( "Hello from dir/more-required-by-main-module module. I have no dependencies." );
-	
-	exports.hello = function(){ return "hello"; };
+
+console.log( "Hello from dir/more-required-by-main-module module. I have no dependencies." );
+
+exports.hello = function(){ return "hello"; };
+
 });
 
 define-module( ["test-package", "another-test-package", "more-package"], [], "more-main-module", true, function( import, exports, module ){
-	var hello = import( "./dir/more-required-by-main-module" ).hello;
-	
-	console.log( "Hello from more-main-module.js. I have a dependency. It says ", hello() );
+
+var hello = import( "./dir/more-required-by-main-module" ).hello;
+
+console.log( "Hello from more-main-module.js. I have a dependency. It says ", hello() );
+
+module.exports = function More(){ console.log( "Constructed a More class." ); };
+
+});
+
+define-module( ["test-package", "another-test-package"], [], "another-required-by-main-module", false, function( import, exports, module ){
+
+console.log( "Hello from another-required-by-main-module module. I have no dependencies." );
+
+exports.hello = function(){ return "another-required-by-main-module.js"; };
+
+});
+
+define-module( ["test-package", "another-test-package"], [], "another-main-module", true, function( import, exports, module ){
+
+var More = import( "more-package" );
+var hello = import( "./dir/more-required-by-main-module" ).hello;
+
+console.info( "Constructing a More inside another-test-package" );
+
+var moreInstance = new More();
+
+console.log( "Hello from another-main-module. I have a dependency. It says ", hello() );
+
+module.exports = function (){ console.log( "Inside another-test-package." ); }
+
+});
+
+define-module( ["test-package"], [], "required-by-main-module", false, function( import, exports, module ){
+
+console.log( "Hello from required-by-main-module module. I have no dependencies." );
+
+exports.hello = function(){ return "required-by-main-module.js"; };
+
+});
+
+define-module( ["test-package"], [], "main-module", true, function( import, exports, module ){
+
+var test = import( "another-test-package" );
+var hello = import( "./dir/more-required-by-main-module" ).hello;
+
+console.info( "Calling test inside test-package" );
+
+test();
+
+console.log( "Hello from main-module. I have a dependency. It says ", hello() );
+
 });
 ```
