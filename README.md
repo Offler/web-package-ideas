@@ -185,7 +185,8 @@ the object returned by "require" must contain at least the exports that the fore
 
 #### Bundle tool example code.
 
-Given all these prerequisites this code example should successfully load up and execute the *test-package* module code.
+Given all these prerequisites this code example should be generated and should successfully load up and execute the *test-package* module code.
+The wrapping around the code modules is generated and added by the bundling tool.
 
 ```javascript
 define-module( [ "test-package", "another-test-package", "more-package" ], [ "dir" ], "more-required-by-main-module", false, function( import, exports, module ){
