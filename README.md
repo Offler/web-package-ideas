@@ -134,17 +134,16 @@ Some of the above classes are show below.
 *more-required-by-main-module.js*
 
 ```javascript
-	console.log( "Hello from dir/more-required-by-main-module module. I have no dependencies." );
-	
-	exports.hello = function(){ return "hello"; };
-});
+console.log( "Hello from dir/more-required-by-main-module module. I have no dependencies." );
+
+exports.hello = function(){ return "hello"; };
 ```
 *more-main-module.js*
 
 ```javascript
-	var hello = import( "./dir/more-required-by-main-module" ).hello;
-	
-	console.log( "Hello from more-main-module.js. I have a dependency. It says ", hello() );
+var hello = import( "./dir/more-required-by-main-module" ).hello;
+
+console.log( "Hello from more-main-module.js. I have a dependency. It says ", hello() );
 ```
 
 
