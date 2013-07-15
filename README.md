@@ -120,6 +120,34 @@ of the package dependency fetching.
 The package management tool would populate a directory e.g. *packages* inside the package directory with all the direct dependencies of a package.
 Within each dependency would reside their own dependencies within their own *packages* directory.
 
+### Possible module code style.
+
+The developer would be free to write in any style he/she chooses within a module as long as they respect two mechanisms.
+
+1. The one to export dependencies. Either attaching to *module.exports* or *exports*, both variables will be injected into the module by the bundling system.
+2. The one to import dependencies. Using the *import* function.
+
+Some of the above classes are show below.
+
+#### Inside more-package package
+
+*more-required-by-main-module.js*
+
+```javascript
+	console.log( "Hello from dir/more-required-by-main-module module. I have no dependencies." );
+	
+	exports.hello = function(){ return "hello"; };
+});
+```
+*more-main-module.js*
+
+```javascript
+	var hello = import( "./dir/more-required-by-main-module" ).hello;
+	
+	console.log( "Hello from more-main-module.js. I have a dependency. It says ", hello() );
+```
+
+
 ### Possible in-browser structure.
 
 Given a package aware module bundling tool that brings together and processes code modules into a format suitable to serve to a web browser we may end up with JS code
@@ -169,6 +197,6 @@ define-module( [ "test-package", "another-test-package", "more-package" ], [ "di
 define-module( ["test-package", "another-test-package", "more-package"], [], "more-main-module", true, function( import, exports, module ){
 	var hello = import( "./dir/more-required-by-main-module" ).hello;
 	
-	console.log( "Hello from more-main-module.js. I have dependencies. They say ", hello() );
+	console.log( "Hello from more-main-module.js. I have a dependency. It says ", hello() );
 });
 ```
